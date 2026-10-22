@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Tidy</string>
+
+    <string name="common_back">뒤로</string>
+    <string name="common_cancel">취소</string>
+    <string name="common_unknown_error">알 수 없는 오류</string>
+
+    <!-- 폴더 -->
+    <string name="category_social">소셜·메신저</string>
+    <string name="category_finance">금융</string>
+    <string name="category_shop">쇼핑·음식</string>
+    <string name="category_video">영상·웹툰</string>
+    <string name="category_music">음악</string>
+    <string name="category_photo">사진·카메라</string>
+    <string name="category_work">업무·생산성</string>
+    <string name="category_map">지도·여행</string>
+    <string name="category_news">뉴스·읽기</string>
+    <string name="category_game">게임</string>
+    <string name="category_health">건강</string>
+    <string name="category_edu">교육</string>
+    <string name="category_tools">도구</string>
+    <string name="category_system">삼성·기본 앱</string>
+    <string name="category_etc">기타</string>
+
+    <plurals name="apps_count">
+        <item quantity="other">%d개</item>
+    </plurals>
+
+    <!-- 앱스 화면 -->
+    <string name="apps_search_hint">앱 검색</string>
+    <string name="apps_clear_search">검색어 지우기</string>
+    <string name="apps_settings">설정</string>
+    <string name="apps_view_folders">폴더</string>
+    <string name="apps_view_all">전체 A–Z</string>
+    <plurals name="apps_summary">
+        <item quantity="other">앱 %1$d개 · 자동 분류됨</item>
+    </plurals>
+    <string name="apps_no_results">\'%1$s\'에 맞는 앱이 없어요.</string>
+    <string name="app_menu_label">더보기</string>
+    <string name="app_menu_move">다른 폴더로 옮기기</string>
+    <string name="app_menu_info">앱 정보</string>
+    <string name="app_menu_uninstall">삭제</string>
+    <string name="app_launch_failed">%1$s 앱을 열 수 없어요.</string>
+    <string name="install_notice">\'%1$s\' → %2$s 폴더에 추가됨</string>
+    <string name="install_notice_change">변경</string>
+
+    <string name="folder_rename">이름 바꾸기</string>
+    <string name="folder_rename_save">저장</string>
+    <string name="folder_name">폴더 이름</string>
+    <string name="folder_hint">길게 눌러서 다른 폴더로 옮기기 · 옮긴 앱은 다시 분류해도 유지</string>
+
+    <string name="move_title">\'%1$s\' 옮길 폴더</string>
+    <string name="move_auto">자동 분류: %1$s</string>
+    <string name="move_current">현재 폴더</string>
+
+    <!-- 처음 실행 -->
+    <string name="onboarding_loading">앱 정리 중…</string>
+    <plurals name="onboarding_title">
+        <item quantity="other">설치된 앱 %1$d개를 %2$d개 폴더로 정리했어요</item>
+    </plurals>
+    <string name="onboarding_body">앱 카테고리와 이름을 보고 분류했어요. 잘못 들어간 앱은 언제든 옮길 수 있어요.</string>
+    <string name="onboarding_new_apps">새 앱도 자동 분류</string>
+    <string name="onboarding_new_apps_hint">설치하자마자 맞는 폴더로</string>
+    <string name="onboarding_moves_stay">직접 옮긴 앱은 그대로</string>
+    <string name="onboarding_moves_stay_hint">다시 분류해도 바뀌지 않음</string>
+    <string name="onboarding_private">폰 안에서만 처리</string>
+    <string name="onboarding_private_hint">앱 목록은 어디에도 전송되지 않음</string>
+    <string name="onboarding_set_home">기본 홈 앱으로 설정</string>
+    <string name="onboarding_keep_home">홈 화면은 그대로 두기</string>
+
+    <!-- 설정 -->
+    <string name="settings_title">설정</string>
+    <string name="settings_home_section">홈 화면</string>
+    <string name="settings_default_home">기본 홈 앱</string>
+    <string name="settings_default_home_on">Tidy 사용 중 · 눌러서 변경</string>
+    <string name="settings_default_home_off">다른 앱 사용 중 · 눌러서 Tidy로 변경</string>
+    <string name="settings_sorting_section">분류</string>
+    <string name="settings_reset">직접 바꾼 분류 되돌리기</string>
+    <string name="settings_reset_hint">옮긴 앱과 바꾼 폴더 이름 %1$d개</string>
+    <string name="settings_reset_none">직접 바꾼 분류 없음</string>
+    <string name="settings_reset_confirm_title">되돌릴까요?</string>
+    <string name="settings_reset_confirm_body">옮긴 앱은 자동 분류된 폴더로, 폴더 이름은 원래 이름으로 돌아가요.</string>
+    <string name="settings_reset_confirm">되돌리기</string>
+    <string name="settings_version">버전</string>
+
+    <!-- 업데이트 (WakeLink의 update/ 코드와 공유) -->
+    <string name="settings_updates">앱 업데이트</string>
+    <string name="settings_check_update">업데이트 확인</string>
+    <string name="settings_checking_update">확인하는 중…</string>
+    <string name="settings_current_version">지금 버전: %1$s</string>
+    <string name="settings_up_to_date">최신 버전 (%1$s)</string>
+    <string name="settings_update_available">새 버전 %1$s 있음</string>
+    <string name="settings_update_check_failed">확인 실패: %1$s</string>
+    <string name="settings_network_error">네트워크 오류</string>
+    <string name="settings_auto_update">새 버전 확인</string>
+    <string name="settings_auto_update_hint">앱을 열 때와 하루 두 번 확인해서 알림 · 설치는 직접 확인 후</string>
+
+    <string name="update_title">새 버전 %1$s</string>
+    <string name="update_current">지금 버전: %1$s</string>
+    <string name="update_downloading">내려받는 중…</string>
+    <string name="update_needs_permission">업데이트하려면 \'출처를 알 수 없는 앱 설치\'를 한 번 허용해 주세요. 허용하고 돌아오면 설치 화면이 바로 열려요.</string>
+    <string name="update_download_failed">내려받지 못했어요: %1$s</string>
+    <string name="update_retry">다시 시도</string>
+    <string name="update_install">업데이트</string>
+    <string name="update_grant_permission">권한 허용하러 가기</string>
+    <string name="update_skip">건너뛰기</string>
+    <string name="update_later">나중에</string>
+    <string name="update_channel_name">앱 업데이트</string>
+    <string name="update_notification_title">Tidy %1$s 출시</string>
+    <string name="update_notification_body">눌러서 업데이트</string>
+</resources>
