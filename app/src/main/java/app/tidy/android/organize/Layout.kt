@@ -18,6 +18,9 @@ sealed interface Step {
     /** Breaks a folder up; its apps go back onto the apps screen. */
     data class Dissolve(val folder: String) : Step
 
+    /** Renames a folder whose apps are already right. */
+    data class RenameFolder(val from: String, val to: String) : Step
+
     /** Puts apps that are outside any folder into an existing folder. */
     data class AddToFolder(val apps: List<String>, val folder: String) : Step
 
@@ -26,6 +29,22 @@ sealed interface Step {
         init {
             require(apps.size >= 2) { "a folder needs at least two apps" }
         }
+    }
+}
+
+/**
+ * The apps screen after [steps] -- what a run leaves behind, so it needn't
+ * be read again (every step is checked on screen as it's done).
+ */
+fun DrawerLayout.after(steps: List<Step>): DrawerLayout = steps.fold(this) { l, step ->
+    when (step) {
+        is Step.Dissolve -> l.folder(step.folder)?.let { f -> DrawerLayout(l.folders - f, l.loose + f.apps) } ?: l
+        is Step.RenameFolder -> l.copy(folders = l.folders.map { if (it.name == step.from) it.copy(name = step.to) else it })
+        is Step.AddToFolder -> DrawerLayout(
+            l.folders.map { if (it.name == step.folder) it.copy(apps = it.apps + step.apps) else it },
+            l.loose - step.apps.toSet(),
+        )
+        is Step.CreateFolder -> DrawerLayout(l.folders + DrawerFolder(step.name, step.apps), l.loose - step.apps.toSet())
     }
 }
 

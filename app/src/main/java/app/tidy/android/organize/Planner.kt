@@ -87,7 +87,8 @@ object Planner {
      * that still holds all its apps (missing ones are moved in); any other
      * folder is dissolved and, if the target wants it, made again. Target
      * apps not on the phone are skipped, and a target folder left with one
-     * app isn't made (One UI folders need two). Order: dissolve, add, create.
+     * app isn't made (One UI folders need two). A folder with exactly the right apps under
+     * another name is renamed instead. Order: rename, dissolve, add, create.
      */
     fun steps(current: DrawerLayout, target: DrawerLayout): List<Step> {
         val onPhone = current.allApps.toSet()
@@ -98,13 +99,26 @@ object Planner {
             goal != null && goal.apps.containsAll(folder.apps)
         }.map { it.name }.toSet()
 
-        val dissolve = current.folders.filter { it.name !in kept }.map { Step.Dissolve(it.name) }
+        // A folder holding exactly a wanted folder's apps under another name only needs renaming.
+        val renames = mutableListOf<Step.RenameFolder>()
+        val renamedTo = mutableSetOf<String>()
+        for (folder in current.folders.filter { it.name !in kept }) {
+            val goal = wanted.firstOrNull { w ->
+                w.name !in kept && w.name !in renamedTo && current.folder(w.name) == null &&
+                    w.apps.size >= 2 && w.apps.toSet() == folder.apps.toSet()
+            } ?: continue
+            renames += Step.RenameFolder(folder.name, goal.name)
+            renamedTo += goal.name
+        }
+        val renamedFrom = renames.map { it.from }.toSet()
+
+        val dissolve = current.folders.filter { it.name !in kept && it.name !in renamedFrom }.map { Step.Dissolve(it.name) }
         val moves = wanted.filter { it.name in kept }.mapNotNull { goal ->
             val already = current.folder(goal.name)!!.apps.toSet()
             goal.apps.filter { it !in already }.takeIf { it.isNotEmpty() }?.let { Step.AddToFolder(it, goal.name) }
         }
-        val creates = wanted.filter { it.name !in kept && it.apps.size >= 2 }
+        val creates = wanted.filter { it.name !in kept && it.name !in renamedTo && it.apps.size >= 2 }
             .map { Step.CreateFolder(it.name, it.apps) }
-        return dissolve + moves + creates
+        return renames + dissolve + moves + creates
     }
 }

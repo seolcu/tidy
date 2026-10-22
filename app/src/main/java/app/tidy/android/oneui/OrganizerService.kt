@@ -16,6 +16,7 @@ import app.tidy.android.organize.DrawerLayout
 import app.tidy.android.organize.Executor
 import app.tidy.android.organize.Planner
 import app.tidy.android.organize.RunResult
+import app.tidy.android.organize.after
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -75,15 +76,18 @@ class OrganizerService : AccessibilityService() {
 
     fun organize(target: DrawerLayout, saveUndo: Boolean) {
         scope.launch {
-            Organizer.setWork(Work.Reading)
-            val current = drawer.read()
+            val current = Organizer.freshRead() ?: run {
+                Organizer.setWork(Work.Reading)
+                drawer.read()
+            }
             if (current == null) {
                 Organizer.setWork(Work.ReadFailed)
                 backToTidy()
                 return@launch
             }
             val steps = Planner.steps(current, target)
-            if (saveUndo && steps.isNotEmpty()) settings.setUndoSnapshot(current)
+            val keepOlderSnapshot = settings.undoSnapshot.first() != null && !settings.lastRunFinished.first()
+            if (saveUndo && steps.isNotEmpty() && !keepOlderSnapshot) settings.setUndoSnapshot(current)
             val result = Executor(drawer).run(
                 steps,
                 shouldStop = Organizer::consumeStop,
@@ -94,7 +98,10 @@ class OrganizerService : AccessibilityService() {
             )
             hideProgress()
             if (!saveUndo && result == RunResult.Done) settings.setUndoSnapshot(null)
-            Organizer.setLastRead(drawer.read())
+            settings.setLastRunFinished(result == RunResult.Done)
+            // Each step was checked as it was done, so the outcome is known; after a
+            // stop or failure, make the next run read the screen again.
+            Organizer.setLastRead(if (result == RunResult.Done) current.after(steps) else null)
             Organizer.setWork(Work.Finished(result, undo = !saveUndo))
             backToTidy()
         }

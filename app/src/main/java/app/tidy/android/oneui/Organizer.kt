@@ -1,6 +1,7 @@
 package app.tidy.android.oneui
 
 import android.content.Context
+import android.os.SystemClock
 import app.tidy.android.TidyApplication
 import app.tidy.android.data.AppEntry
 import app.tidy.android.data.SettingsRepository
@@ -54,9 +55,23 @@ object Organizer {
         _work.value = work
     }
 
+    @Volatile
+    private var lastReadAt = 0L
+
     internal fun setLastRead(layout: DrawerLayout?) {
         _lastRead.value = layout
+        lastReadAt = if (layout == null) 0 else SystemClock.elapsedRealtime()
     }
+
+    /**
+     * The last read if it's recent enough to plan on without reading again
+     * (the usual case: read, look at the preview, apply). Should the screen
+     * have changed meanwhile, the first step that doesn't match stops the run.
+     */
+    internal fun freshRead(): DrawerLayout? =
+        lastRead.value?.takeIf { SystemClock.elapsedRealtime() - lastReadAt < FRESH_MS }
+
+    private const val FRESH_MS = 10 * 60 * 1000L
 
     internal fun consumeStop(): Boolean = stopRequested
 

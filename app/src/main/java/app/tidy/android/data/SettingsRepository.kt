@@ -38,6 +38,14 @@ class SettingsRepository(context: Context) {
         }
     }
 
+    /**
+     * Whether the last run finished. While it didn't, the undo snapshot is the
+     * state before that unfinished run, and a retry must not replace it with
+     * the half-done state.
+     */
+    val lastRunFinished: Flow<Boolean> = observe { it[LAST_RUN_FINISHED] ?: true }
+    suspend fun setLastRunFinished(value: Boolean) = store.edit { it[LAST_RUN_FINISHED] = value }
+
     val newAppMode: Flow<NewAppMode> = observe { prefs ->
         prefs[NEW_APP_MODE]?.let { runCatching { NewAppMode.valueOf(it) }.getOrNull() } ?: NewAppMode.ASK
     }
@@ -69,6 +77,7 @@ class SettingsRepository(context: Context) {
     private companion object {
         const val RENAME_PREFIX = "rename."
         val UNDO_SNAPSHOT = stringPreferencesKey("undo_snapshot")
+        val LAST_RUN_FINISHED = booleanPreferencesKey("last_run_finished")
         val NEW_APP_MODE = stringPreferencesKey("new_app_mode")
         val AUTO_UPDATE_CHECK = booleanPreferencesKey("auto_update_check")
         val NOTIFIED_UPDATE_VERSION = stringPreferencesKey("notified_update_version")

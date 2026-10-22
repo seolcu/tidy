@@ -8,6 +8,7 @@ package app.tidy.android.organize
 interface DrawerDriver {
     suspend fun read(): DrawerLayout?
     suspend fun dissolve(folder: String): Boolean
+    suspend fun rename(from: String, to: String): Boolean
     suspend fun addToFolder(apps: List<String>, folder: String): Boolean
     suspend fun createFolder(name: String, apps: List<String>): Boolean
 }
@@ -36,6 +37,7 @@ class Executor(private val driver: DrawerDriver) {
             if (shouldStop()) return RunResult.Stopped(i, steps.size)
             val ok = when (step) {
                 is Step.Dissolve -> driver.dissolve(step.folder)
+                is Step.RenameFolder -> driver.rename(step.from, step.to)
                 is Step.AddToFolder -> driver.addToFolder(step.apps, step.folder)
                 is Step.CreateFolder -> driver.createFolder(step.name, step.apps)
             }

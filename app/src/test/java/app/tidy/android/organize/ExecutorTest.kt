@@ -16,6 +16,12 @@ class FakeDrawer(var layout: DrawerLayout, private val failOn: Step? = null) : D
         true
     }
 
+    override suspend fun rename(from: String, to: String): Boolean = act(Step.RenameFolder(from, to)) {
+        if (layout.folder(from) == null || layout.folder(to) != null) return@act false
+        layout = layout.copy(folders = layout.folders.map { if (it.name == from) it.copy(name = to) else it })
+        true
+    }
+
     override suspend fun addToFolder(apps: List<String>, folder: String): Boolean = act(Step.AddToFolder(apps, folder)) {
         if (!layout.loose.containsAll(apps) || layout.folder(folder) == null) return@act false
         layout = DrawerLayout(
@@ -57,6 +63,14 @@ class ExecutorTest {
         assertEquals(RunResult.Done, result)
         assertEquals(target.folders.map { it.name to it.apps.toSet() }, drawer.layout.folders.map { it.name to it.apps.toSet() })
         assertEquals(target.loose.toSet(), drawer.layout.loose.toSet())
+    }
+
+    @Test
+    fun predictedLayoutMatchesWhatTheScreenEndsUpAs() = runBlocking {
+        val steps = Planner.steps(before, target)
+        val drawer = FakeDrawer(before)
+        Executor(drawer).run(steps)
+        assertEquals(drawer.layout, before.after(steps))
     }
 
     @Test

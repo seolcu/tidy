@@ -77,8 +77,10 @@ class PlannerTest {
         )
         assertEquals(listOf("Unknown"), target.loose)
         val steps = Planner.steps(phone, target)
-        assertEquals(4, steps.count { it is Step.Dissolve })
-        assertEquals(6, steps.count { it is Step.CreateFolder })
+        // "게임" already holds exactly the game folder's apps: renamed, not rebuilt.
+        assertEquals(listOf(Step.RenameFolder("게임", "game")), steps.filterIsInstance<Step.RenameFolder>())
+        assertEquals(3, steps.count { it is Step.Dissolve })
+        assertEquals(5, steps.count { it is Step.CreateFolder })
         assertTrue(steps.indexOfLast { it is Step.Dissolve } < steps.indexOfFirst { it is Step.CreateFolder })
     }
 
@@ -93,8 +95,20 @@ class PlannerTest {
     fun undoRestoresTheSnapshot() {
         val after = Planner.rebuild(phone, categoryOf, nameOf)
         val back = Planner.steps(after, phone)
-        assertEquals(6, back.count { it is Step.Dissolve })
-        assertEquals(phone.folders.map { Step.CreateFolder(it.name, it.apps) }, back.filterIsInstance<Step.CreateFolder>())
+        assertEquals(listOf(Step.RenameFolder("game", "게임")), back.filterIsInstance<Step.RenameFolder>())
+        assertEquals(5, back.count { it is Step.Dissolve })
+        assertEquals(
+            phone.folders.filter { it.name != "게임" }.map { Step.CreateFolder(it.name, it.apps) },
+            back.filterIsInstance<Step.CreateFolder>(),
+        )
+    }
+
+    @Test
+    fun aFolderWithTheRightAppsIsRenamedNotRebuilt() {
+        // Seen on the phone: the folder got made but its name didn't stick.
+        val current = DrawerLayout(listOf(DrawerFolder("", listOf("토스", "카카오뱅크"))), listOf("Minecraft"))
+        val target = DrawerLayout(listOf(DrawerFolder("금융/결제", listOf("카카오뱅크", "토스"))), listOf("Minecraft"))
+        assertEquals(listOf(Step.RenameFolder("", "금융/결제")), Planner.steps(current, target))
     }
 
     @Test
