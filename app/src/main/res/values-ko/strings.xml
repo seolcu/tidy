@@ -41,6 +41,7 @@
     <string name="home_start_hint">앱스 화면을 열어 폴더 안까지 확인해요. 직접 확인하기 전에는 아무것도 바꾸지 않아요.</string>
     <string name="home_undo">마지막 정리 되돌리기</string>
     <string name="home_undo_hint">정리하기 전 폴더 구성으로</string>
+    <string name="home_undo_forget">기록 지우기</string>
     <string name="home_undo_confirm_title">되돌릴까요?</string>
     <string name="home_undo_confirm_body">마지막으로 정리하기 전의 폴더 구성으로 되돌려요. 한동안 화면이 혼자 움직이니 만지지 말아 주세요.</string>
 

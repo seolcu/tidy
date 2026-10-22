@@ -43,6 +43,7 @@
     <string name="home_start_hint">Tidy opens the apps screen and looks into each folder. Nothing changes until you confirm.</string>
     <string name="home_undo">Undo last organizing</string>
     <string name="home_undo_hint">Back to the folders from before</string>
+    <string name="home_undo_forget">Forget it</string>
     <string name="home_undo_confirm_title">Undo?</string>
     <string name="home_undo_confirm_body">Tidy puts the folders back the way they were before the last run. The screen moves by itself for a while; don\'t touch it.</string>
 

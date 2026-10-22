@@ -199,7 +199,15 @@ fun HomeScreen(vm: TidyViewModel, serviceReady: Boolean, onPreview: () -> Unit, 
                     vm.undo()
                 }) { Text(stringResource(R.string.home_undo)) }
             },
-            dismissButton = { TextButton(onClick = { confirmUndo = false }) { Text(stringResource(R.string.common_cancel)) } },
+            dismissButton = {
+                Row {
+                    TextButton(onClick = {
+                        confirmUndo = false
+                        vm.forgetUndo()
+                    }) { Text(stringResource(R.string.home_undo_forget)) }
+                    TextButton(onClick = { confirmUndo = false }) { Text(stringResource(R.string.common_cancel)) }
+                }
+            },
         )
     }
 }

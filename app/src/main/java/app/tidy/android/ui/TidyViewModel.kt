@@ -84,6 +84,14 @@ class TidyViewModel(app: Application) : AndroidViewModel(app) {
         viewModelScope.launch { Organizer.undo(getApplication()) }
     }
 
+    /** Drops the undo snapshot without restoring it. */
+    fun forgetUndo() {
+        viewModelScope.launch {
+            settings.setUndoSnapshot(null)
+            settings.setLastRunFinished(true)
+        }
+    }
+
     fun stop() = Organizer.stop()
 
     fun setNewAppMode(m: NewAppMode) {
