@@ -128,17 +128,44 @@ on a real S24, One UI 8 / Android 17). Highlights:
 - An app's long-press menu has "설치 삭제" (uninstall) and select mode has an
   uninstall button: menu items are matched by exact text only, after
   checking the menu header is the icon that was long-pressed.
+- New folders are made in one pass down the list in select mode: long-press
+  the first of the folder's apps that's fully in view, "선택", then tap
+  every wanted app on each screen while scrolling (a real tap -- an
+  accessibility click doesn't tick in select mode), up to three passes.
+  Searching from the top for each app was far too slow with 160 loose apps.
+- Never touch the navigation bar or the apps screen's floating search bar.
+  Every gesture goes through `gesture()`, which refuses points outside
+  `safeArea()` and, on the apps screen with no folder open, below the
+  search bar (remembered when seen: it hides in select mode and while
+  scrolling, then comes back). Stray taps there ended select mode mid-run,
+  after which the next taps opened apps or the search screen. Each tap in
+  select mode also re-checks that select mode is still on and re-reads the
+  icon's position first.
+- Folder titles: tap the title, wait for edit mode (it wipes the field),
+  set the text, commit with the keyboard's enter. Setting text before the
+  keyboard is up, or BACK while editing, loses the name.
 - Coming back to Tidy: close the apps screen with BACK, not HOME -- right
   after a home press Android blocks other apps' activity starts for a few
   seconds, so Tidy never reappeared.
+- Anything the user does mid-run (opening recents, tapping) makes the next
+  step's check fail and the run stops; re-running continues from the
+  current state.
 - One UI can unbind and rebind the same service object; the coroutine
   scope is recreated on every `onServiceConnected`.
 
 `Organizer` is the app-wide face: `work` (reading / organizing n of m /
 finished / failed), `lastRead` layout, `ready` (service connected), and
-`read()` / `apply(target)` / `undo()` / `stop()`. Every run re-reads the
-screen first, so the steps match what is really there, and stops at the
-first step that doesn't verify.
+`read()` / `apply(target)` / `undo()` / `stop()`. A run plans on the last
+read if it's under 10 minutes old (read → preview → apply), otherwise
+reads first; it stops at the first step that doesn't verify, and
+afterwards takes the outcome from `DrawerLayout.after(steps)` instead of
+reading again (or forgets the read after a stop/failure). Reading the
+screen takes ~15 s and each new folder ~10 s on the S24.
+
+The undo snapshot is the screen before the first run of a series that
+didn't finish (`lastRunFinished`): retrying an interrupted run must not
+replace it with the half-done state (that happened once and lost the
+user's original folders).
 
 ### Planning (`organize/`)
 
@@ -152,7 +179,9 @@ the preview's hand edits. `Planner.steps(current, target)` is the one diff
 for all of it, including undo (target = the snapshot saved before the last
 run): a folder survives when the target folder of the same name still
 holds all its apps (the rest are added); otherwise it's dissolved and
-remade. One UI has no nested folders and Tidy never makes any.
+remade -- unless a current folder holds exactly a wanted folder's apps,
+which is just renamed. One UI has no nested folders and Tidy never makes
+any.
 
 ### App list
 
