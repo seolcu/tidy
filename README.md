@@ -14,23 +14,27 @@
 
 ---
 
-**Tidy sorts every app on your phone into folders, automatically.**
-A Galaxy's own apps screen can't be rearranged by other apps, so Tidy
-takes its place: keep the One UI home screen and swipe up to open Tidy, use
-Tidy as your home screen, or open it like any app.
+**Tidy sorts your Galaxy's apps screen into folders, in One UI itself.**
+No new launcher to get used to: Tidy works on the real One UI apps screen,
+moving icons into folders for you the way you would by hand.
 
-- **Sorted on install**: new apps go straight into the right folder, with a one-tap "change"
+- **Keep my folders**: apps outside folders go into the folder they belong to; your folders stay as they are
+- **Leave it to Tidy**: ignores your folders and sorts every app from scratch
+- **Preview first**: see every change, move apps or rename folders before anything happens; undo afterwards
+- **New apps**: Tidy offers to put each newly installed app in its folder (or just does it)
 - **Knows Korean apps**: Toss, Baemin, KakaoTalk and the rest, plus Samsung's own apps
-- **Your moves stay**: move an app once and re-sorting never undoes it; rename any folder
 - **On your phone only**: the app list is never sent anywhere
-- **Search and A–Z** when you'd rather not open a folder
 - **English and Korean**, following your phone's language
+
+Needs a Galaxy phone with One UI Home, and an accessibility permission
+(Tidy uses it only on the One UI home screen, only when organizing).
 
 ## Install
 
 1. Download `tidy.apk` from the [latest release](https://github.com/seolcu/tidy/releases/latest/download/tidy.apk).
 2. Open it. Tidy isn't on the Play Store, so the first time Android asks you to allow installing apps from your browser or file manager.
-3. Choose **Use as my apps screen** (Galaxy: swipe up on the One UI home screen opens Tidy; needs an accessibility permission that only watches One UI Home), **Set as home app**, or neither and open Tidy from its icon.
+3. In Accessibility settings → Installed apps, turn on **Tidy**. If the switch is greyed out: App info → ⋮ → Allow restricted settings, then try again.
+4. In Tidy, tap **Read the apps screen and organize**. Don't touch the screen while it works.
 
 Tidy checks GitHub for new versions and offers to update itself (Settings → App updates).
 

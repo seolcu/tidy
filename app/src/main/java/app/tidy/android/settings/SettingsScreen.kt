@@ -1,7 +1,6 @@
 package app.tidy.android.settings
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,19 +11,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.Accessibility
 import androidx.compose.material.icons.rounded.Info
-import androidx.compose.material.icons.rounded.Restore
-import androidx.compose.material.icons.rounded.SwipeUp
 import androidx.compose.material.icons.rounded.SystemUpdate
 import androidx.compose.material.icons.rounded.Update
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -37,9 +32,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import android.content.Intent
+import android.provider.Settings
 import app.tidy.android.BuildConfig
 import app.tidy.android.R
-import app.tidy.android.apps.AppsState
 import app.tidy.android.data.SettingsRepository
 import app.tidy.android.ui.components.SectionCard
 import app.tidy.android.ui.components.SettingsRow
@@ -51,21 +47,11 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 @Composable
-fun SettingsScreen(
-    state: AppsState?,
-    isDefaultHome: Boolean,
-    takeoverAvailable: Boolean,
-    takeoverEnabled: Boolean,
-    onRequestHome: () -> Unit,
-    onSetUpTakeover: () -> Unit,
-    onResetCustomizations: () -> Unit,
-    onBack: () -> Unit,
-) {
+fun SettingsScreen(serviceReady: Boolean, onBack: () -> Unit) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val settings = remember { SettingsRepository(context) }
 
-    var confirmReset by remember { mutableStateOf(false) }
     var autoUpdateCheck by remember { mutableStateOf(true) }
     var checkingUpdate by remember { mutableStateOf(false) }
     var updateStatus by remember { mutableStateOf<String?>(null) }
@@ -74,12 +60,7 @@ fun SettingsScreen(
     LaunchedEffect(Unit) { autoUpdateCheck = settings.autoUpdateCheck.first() }
     BackHandler(onBack = onBack)
 
-    Column(
-        Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .systemBarsPadding(),
-    ) {
+    Column(Modifier.fillMaxSize().systemBarsPadding()) {
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(horizontal = 4.dp, vertical = 8.dp)) {
             IconButton(onClick = onBack) {
                 Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = stringResource(R.string.common_back))
@@ -93,35 +74,12 @@ fun SettingsScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 24.dp),
         ) {
-            SectionCard(stringResource(R.string.settings_home_section)) {
+            SectionCard(stringResource(R.string.settings_permission_section)) {
                 SettingsRow(
-                    icon = Icons.Rounded.Home,
-                    title = stringResource(R.string.settings_default_home),
-                    supporting = stringResource(
-                        if (isDefaultHome) R.string.settings_default_home_on else R.string.settings_default_home_off
-                    ),
-                    onClick = onRequestHome,
-                )
-                if (takeoverAvailable) {
-                    SettingsRow(
-                        icon = Icons.Rounded.SwipeUp,
-                        title = stringResource(R.string.settings_takeover),
-                        supporting = stringResource(
-                            if (takeoverEnabled) R.string.settings_takeover_on else R.string.settings_takeover_off
-                        ),
-                        onClick = onSetUpTakeover,
-                    )
-                }
-            }
-
-            SectionCard(stringResource(R.string.settings_sorting_section)) {
-                val count = state?.customizationCount ?: 0
-                SettingsRow(
-                    icon = Icons.Rounded.Restore,
-                    title = stringResource(R.string.settings_reset),
-                    supporting = if (count == 0) stringResource(R.string.settings_reset_none)
-                    else stringResource(R.string.settings_reset_hint, count),
-                    onClick = if (count == 0) null else { { confirmReset = true } },
+                    icon = Icons.Rounded.Accessibility,
+                    title = stringResource(R.string.settings_service),
+                    supporting = stringResource(if (serviceReady) R.string.settings_service_on else R.string.settings_service_off),
+                    onClick = { runCatching { context.startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) } },
                 )
             }
 
@@ -180,23 +138,6 @@ fun SettingsScreen(
                 }
             }
         }
-    }
-
-    if (confirmReset) {
-        AlertDialog(
-            onDismissRequest = { confirmReset = false },
-            title = { Text(stringResource(R.string.settings_reset_confirm_title)) },
-            text = { Text(stringResource(R.string.settings_reset_confirm_body)) },
-            confirmButton = {
-                TextButton(onClick = {
-                    confirmReset = false
-                    onResetCustomizations()
-                }) { Text(stringResource(R.string.settings_reset_confirm)) }
-            },
-            dismissButton = {
-                TextButton(onClick = { confirmReset = false }) { Text(stringResource(R.string.common_cancel)) }
-            },
-        )
     }
 
     availableUpdate?.let { info ->

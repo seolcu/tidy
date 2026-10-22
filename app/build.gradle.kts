@@ -27,8 +27,8 @@ android {
         // Bump both for every release: versionName becomes the GitHub
         // release tag (v<versionName>) the in-app updater compares against,
         // and Android refuses to install a lower versionCode over a higher one.
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = 2
+        versionName = "0.2.0"
 
         // GitHub "owner/repo" whose latest release the in-app updater
         // offers. Forks signing with their own key must change (or blank,

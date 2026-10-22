@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- oneui/OrganizerService: only the Samsung launcher's windows, where it
+     reads the apps screen and moves icons. -->
+<accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:description="@string/service_description"
+    android:summary="@string/service_summary"
+    android:packageNames="com.sec.android.app.launcher"
+    android:accessibilityEventTypes="typeWindowStateChanged"
+    android:accessibilityFeedbackType="feedbackGeneric"
+    android:accessibilityFlags="flagReportViewIds|flagRetrieveInteractiveWindows"
+    android:canRetrieveWindowContent="true"
+    android:canPerformGestures="true"
+    android:notificationTimeout="100"
+    android:isAccessibilityTool="false"
+    tools:ignore="UnusedAttribute" />

@@ -16,3 +16,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "tidy"
 include(":app")
+include(":testapp")

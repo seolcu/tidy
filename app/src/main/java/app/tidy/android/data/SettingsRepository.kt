@@ -7,39 +7,43 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import app.tidy.android.domain.Category
+import app.tidy.android.organize.DrawerLayout
+import app.tidy.android.organize.LayoutCodec
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
 private val Context.dataStore by preferencesDataStore(name = "settings")
 
+/** What to do when an app is installed. */
+enum class NewAppMode { ASK, AUTO, OFF }
+
 /**
- * Everything Tidy remembers: the user's manual moves (package -> folder),
- * renamed folders, onboarding, and the update-check flags the shared
- * `update/` code expects (same names as in WakeLink).
+ * Everything Tidy remembers: the apps screen as it was before the last run
+ * (for undo), what to do with new apps, the names Tidy gives its own
+ * folders, and the update-check flags the shared `update/` code expects
+ * (same names as in WakeLink).
  */
 class SettingsRepository(context: Context) {
     private val store = context.applicationContext.dataStore
 
     private fun <T> observe(read: (Preferences) -> T): Flow<T> = store.data.map(read).distinctUntilChanged()
 
-    /** Package name -> folder the user moved it to. */
-    val overrides: Flow<Map<String, Category>> = observe { prefs ->
-        prefs.asMap().mapNotNull { (key, value) ->
-            val pkg = key.name.removePrefix(OVERRIDE_PREFIX).takeIf { key.name.startsWith(OVERRIDE_PREFIX) }
-            val category = (value as? String)?.let(Category::fromName)
-            if (pkg != null && category != null) pkg to category else null
-        }.toMap()
-    }
+    /** The apps screen before the last run that changed it; null once undone or never run. */
+    val undoSnapshot: Flow<DrawerLayout?> = observe { prefs -> prefs[UNDO_SNAPSHOT]?.let(LayoutCodec::decode) }
 
-    suspend fun setOverride(packageName: String, category: Category?) {
+    suspend fun setUndoSnapshot(layout: DrawerLayout?) {
         store.edit { prefs ->
-            val key = stringPreferencesKey(OVERRIDE_PREFIX + packageName)
-            if (category == null) prefs.remove(key) else prefs[key] = category.name
+            if (layout == null) prefs.remove(UNDO_SNAPSHOT) else prefs[UNDO_SNAPSHOT] = LayoutCodec.encode(layout)
         }
     }
 
-    /** Folders the user renamed; the rest use their default label. */
+    val newAppMode: Flow<NewAppMode> = observe { prefs ->
+        prefs[NEW_APP_MODE]?.let { runCatching { NewAppMode.valueOf(it) }.getOrNull() } ?: NewAppMode.ASK
+    }
+    suspend fun setNewAppMode(mode: NewAppMode) = store.edit { it[NEW_APP_MODE] = mode.name }
+
+    /** Names the user gave Tidy's folders in the preview; the rest use their default label. */
     val folderNames: Flow<Map<Category, String>> = observe { prefs ->
         Category.entries.mapNotNull { c -> prefs[stringPreferencesKey(RENAME_PREFIX + c.name)]?.let { c to it } }.toMap()
     }
@@ -50,18 +54,6 @@ class SettingsRepository(context: Context) {
             if (name.isNullOrBlank()) prefs.remove(key) else prefs[key] = name.trim()
         }
     }
-
-    /** Drops every manual move and folder name. */
-    suspend fun resetCustomizations() {
-        store.edit { prefs ->
-            prefs.asMap().keys
-                .filter { it.name.startsWith(OVERRIDE_PREFIX) || it.name.startsWith(RENAME_PREFIX) }
-                .forEach { prefs.remove(it) }
-        }
-    }
-
-    val onboarded: Flow<Boolean> = observe { it[ONBOARDED] ?: false }
-    suspend fun setOnboarded() = store.edit { it[ONBOARDED] = true }
 
     val autoUpdateCheck: Flow<Boolean> = observe { it[AUTO_UPDATE_CHECK] ?: true }
     suspend fun setAutoUpdateCheck(value: Boolean) = store.edit { it[AUTO_UPDATE_CHECK] = value }
@@ -75,9 +67,9 @@ class SettingsRepository(context: Context) {
     suspend fun setSkippedUpdateVersion(value: String) = store.edit { it[SKIPPED_UPDATE_VERSION] = value }
 
     private companion object {
-        const val OVERRIDE_PREFIX = "override."
         const val RENAME_PREFIX = "rename."
-        val ONBOARDED = booleanPreferencesKey("onboarded")
+        val UNDO_SNAPSHOT = stringPreferencesKey("undo_snapshot")
+        val NEW_APP_MODE = stringPreferencesKey("new_app_mode")
         val AUTO_UPDATE_CHECK = booleanPreferencesKey("auto_update_check")
         val NOTIFIED_UPDATE_VERSION = stringPreferencesKey("notified_update_version")
         val SKIPPED_UPDATE_VERSION = stringPreferencesKey("skipped_update_version")

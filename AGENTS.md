@@ -4,12 +4,19 @@ This file provides guidance to coding agents when working with code in this repo
 
 ## What this is
 
-Tidy: an Android launcher whose apps screen sorts every installed
-app into category folders automatically. It exists because a Galaxy's own
-apps screen (One UI Home) can't be rearranged by other apps -- there is no
-API for another app to create folders there -- so Tidy *replaces* that
-screen instead: it can be set as the default home app, or opened like any
-app. Single Kotlin/Compose module, no backend.
+Tidy organizes the folders of One UI's own apps screen (Galaxy phones).
+There is no API for another app to change One UI Home's layout, so Tidy
+does it the way a person would: an accessibility service opens the apps
+screen and uses One UI's own controls (select mode, "add apps to folder",
+folder menu). The user keeps the real apps screen; Tidy only changes what
+folders are in it. Two ways to organize: keep the user's folders and file
+the loose apps into them, or ignore them and rebuild everything from
+Tidy's categories. Plus a new-app helper and undo. Single Kotlin/Compose
+app module (`app/`) plus `testapp/`, no backend.
+
+0.1.0 was a launcher that replaced the apps screen instead; the user found
+it unfamiliar and buggy, and it only covered One UI's screen, so 0.2.0
+dropped that approach entirely.
 
 Sibling project: WakeLink (`../wakelink`). Tidy deliberately copies its
 toolchain, conventions and some code (see "Shared with WakeLink" below);
@@ -36,9 +43,24 @@ export PATH="$JAVA_HOME/bin:$PATH"
 `app/src/test` holds plain-JVM unit tests for the pure logic
 (`domain/`: classification, folder grouping, search; `update/`: version
 compare, release notes). Keep that logic free of Android framework types
-so it stays testable there. There is no instrumented test suite, and the
-emulator (`~/.local/share/android-sdk/emulator`) segfaults when booted
-headless on this machine; check launcher behavior on a real phone.
+so it stays testable there (`organize/`: planning, the executor against a
+fake drawer, the undo snapshot codec). There is no instrumented test
+suite, and the emulator (`~/.local/share/android-sdk/emulator`) segfaults
+when booted headless on this machine; anything in `oneui/` has to be
+checked on a real Galaxy phone.
+
+Testing on the phone, learned the hard way:
+
+- `uiautomator dump` suspends every other accessibility service while it
+  runs, Tidy's included (it unbinds and rebinds). After a dump, wait a few
+  seconds before tapping anything that needs the service.
+- After `adb install -r`, One UI may leave the already-enabled service
+  stuck in "Binding services" (`dumpsys accessibility`). Writing the same
+  `enabled_accessibility_services` value back (blank, then the old value)
+  rebinds it.
+- `testapp/` is a code-free app labelled "테스트 페이" (a finance name) for
+  trying the new-app helper: `./gradlew :testapp:assembleDebug`, then
+  `adb install`/`adb uninstall app.tidy.testpay`.
 
 The app is localized: all user-facing text lives in
 `res/values/strings.xml` (English -- the default and the fallback) and
@@ -82,56 +104,64 @@ If the keystore ever changes, upload the new copy there too
 
 ## Architecture
 
-### Why a launcher
+### Driving One UI's apps screen (`oneui/`)
 
-Android gives third-party apps no way to edit another launcher's folders
-(One UI Home keeps its layout in a private database). `MainActivity` is
-therefore registered for both `LAUNCHER` and `HOME`
-(`singleTask`, so the home button reuses it and arrives in `onNewIntent`,
-which resets to a clean apps screen). As home, back does nothing at the
-top level. `launcher/HomeRole` asks for `RoleManager.ROLE_HOME`, falling
-back to the system's home-app settings. The window is transparent over the
-wallpaper (`windowShowWallpaper`); `AppsScreen` paints a 90% wash.
+`OrganizerService` is the accessibility service (scoped to
+`com.sec.android.app.launcher`, res/xml/organizer_service.xml); the user
+turns it on in Accessibility settings. `OneUiDrawer` is the only code that
+knows One UI: view ids, wording and timings are constants at its bottom,
+and its class comment lists exactly how each operation is done (all found
+on a real S24, One UI 8 / Android 17). Highlights:
 
-v1 deliberately has no widgets, dock or home-screen icon grid: "home" is
-the sorted apps screen itself.
+- Icons are `icon_container` / `folder_icon_container`, named by their
+  inner TextView (descriptions carry extras like ", 알림 1개"). Some
+  folders sit inside an extra `icon_container`; reading those as apps once
+  lost the top five folders.
+- Read only once the screen has stopped moving (`settledIcons`): mid
+  animation the top rows aren't "visible" yet.
+- Folders show 12 apps per page; later pages exist in the tree only after
+  swiping to them.
+- Adding to a folder uses the folder's "add apps" picker (search, tap the
+  row -- its checkbox isn't clickable -- done); new folders come from select
+  mode's "폴더 추가"; dissolving is the folder menu's "삭제", which keeps
+  the apps. No drag and drop anywhere.
+- An app's long-press menu has "설치 삭제" (uninstall) and select mode has an
+  uninstall button: menu items are matched by exact text only, after
+  checking the menu header is the icon that was long-pressed.
+- Coming back to Tidy: close the apps screen with BACK, not HOME -- right
+  after a home press Android blocks other apps' activity starts for a few
+  seconds, so Tidy never reappeared.
+- One UI can unbind and rebind the same service object; the coroutine
+  scope is recreated on every `onServiceConnected`.
 
-### Keeping One UI Home, replacing only its apps screen
+`Organizer` is the app-wide face: `work` (reading / organizing n of m /
+finished / failed), `lastRead` layout, `ready` (service connected), and
+`read()` / `apply(target)` / `undo()` / `stop()`. Every run re-reads the
+screen first, so the steps match what is really there, and stops at the
+first step that doesn't verify.
 
-On Galaxy phones the main mode is different: One UI Home stays the home
-app and Tidy replaces only its apps screen (swipe up). There's no API for
-that, so `launcher/AppsScreenService` is an opt-in accessibility service
-scoped to `com.sec.android.app.launcher` (res/xml/apps_screen_service.xml)
-that watches for the launcher's `id/apps_screen` view (present only while
-its apps screen is up) and starts MainActivity with
-`EXTRA_FROM_APPS_SWIPE` and a no-fade slide (`res/anim/apps_screen_enter`);
-Samsung's apps screen shows for ~0.1 s before Tidy covers it. Things
-learned on a real S24 (One UI 8), each of which broke the flow once:
+### Planning (`organize/`)
 
-- Never close Samsung's apps screen with a global BACK after starting
-  Tidy: the BACK lands on Tidy and closes it instead. It stays open behind
-  Tidy.
-- Leaving must use the service's `GLOBAL_ACTION_HOME` (`goHome()`): only
-  the real home action closes One UI's apps screen; a HOME *intent* from an
-  app brings One UI forward with its apps screen still up.
-- The service never sees that apps screen close (Tidy is on top), so it
-  forgets it on takeover, and ignores the launcher for 1 s after Tidy pauses
-  (`onTidyLeft`) so the closing apps screen doesn't reopen Tidy.
-- The per-service accessibility settings page needs a system permission
-  (SecurityException); open the general accessibility list.
-- Sideloaded (browser/file-manager installed) APKs need App info → ⋮ →
-  "Allow restricted settings" once before the service can be enabled.
+Pure Kotlin. `DrawerLayout` is the apps screen by labels (folders + loose
+apps). `Planner.keepFolders` files loose apps into the user's folders --
+`Taxonomy` gives each folder the category most of its apps have, and a
+folder without a majority is left alone -- or into a new folder when two
+or more share an uncovered category. `Planner.rebuild` ignores the user's
+folders and sorts everything by Tidy's categories. `Planner.edit` applies
+the preview's hand edits. `Planner.steps(current, target)` is the one diff
+for all of it, including undo (target = the snapshot saved before the last
+run): a folder survives when the target folder of the same name still
+holds all its apps (the rest are added); otherwise it's dissolved and
+remade. One UI has no nested folders and Tidy never makes any.
 
 ### App list
 
 `data/AppRepository` (one per process, owned by `TidyApplication`) lists
-launchable activities with `LauncherApps.getActivityList` across all
-`UserManager.userProfiles` (so work-profile apps appear, badged), and
-re-lists on every `LauncherApps.Callback` event. No `QUERY_ALL_PACKAGES`:
-a launcher doesn't need it. `onPackageAdded` also emits on `installed`,
-which `AppsViewModel` turns into the "X → folder · Change" snackbar once
-the reload containing that app lands. `data/IconCache` decodes badged
-icons once at 56dp and evicts a package's icons when it changes.
+launchable activities with `LauncherApps.getActivityList`, which is how
+One UI labels map to packages for classification. `onPackageAdded` also
+emits on `installed`; the service turns that into the new-app helper's
+notification ("put X in folder Y?" → "Add"), or adds it right away in
+AUTO mode, using the folders from the last read.
 
 ### Classification (`domain/`)
 
@@ -153,12 +183,10 @@ app's inputs and result:
 system flag | folder). Add misses to `KnownApps` or the keyword lists, with
 a `CategorizerTest` case for any new ordering rule.
 
-A user's move is stored per package name in `SettingsRepository`
-(`override.<pkg>` = `Category.name`) and always beats classification;
-moving an app back to its automatic folder deletes the override.
-Renamed folders are `rename.<CATEGORY>`. Both are keyed by enum *name*, so
-never rename a `Category` entry -- only add. `buildFolders` drops empty
-folders, sorts biggest first and keeps SYSTEM/ETC last.
+Names for Tidy's own folders can be stored as `rename.<CATEGORY>`, keyed
+by enum *name*, so never rename a `Category` entry -- only add.
+`buildFolders` drops empty folders, sorts biggest first and keeps
+SYSTEM/ETC last.
 
 ### Shared with WakeLink
 

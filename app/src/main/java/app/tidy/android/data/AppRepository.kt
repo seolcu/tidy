@@ -90,7 +90,6 @@ class AppRepository(context: Context) {
         // A paused work profile can refuse to list its apps.
         runCatching { launcherApps.getActivityList(null, user) }.getOrDefault(emptyList())
     }
-        .filter { it.componentName.packageName != appContext.packageName }
         .map { info ->
             val app = info.applicationInfo
             val isSystem = app.flags and (ApplicationInfo.FLAG_SYSTEM or ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0

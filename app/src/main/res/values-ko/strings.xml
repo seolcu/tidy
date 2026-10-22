@@ -6,7 +6,7 @@
     <string name="common_cancel">취소</string>
     <string name="common_unknown_error">알 수 없는 오류</string>
 
-    <!-- 폴더 -->
+    <!-- Tidy가 만드는 폴더 -->
     <string name="category_social">소셜·메신저</string>
     <string name="category_finance">금융</string>
     <string name="category_shop">쇼핑·음식</string>
@@ -23,79 +23,88 @@
     <string name="category_system">삼성·기본 앱</string>
     <string name="category_etc">기타</string>
 
-    <plurals name="apps_count">
-        <item quantity="other">%d개</item>
+    <!-- 홈 -->
+    <string name="home_tagline">One UI 앱스 화면을 폴더로 정리</string>
+    <string name="setup_section">준비</string>
+    <string name="setup_body">Tidy는 진짜 One UI 앱스 화면에서 아이콘을 직접 옮겨서 정리해요. 손으로 하는 것과 같은 방식이라 접근성 권한이 필요하고, One UI 홈 화면에서만 써요.\n\n접근성 설정 → 설치된 앱 → Tidy를 켜 주세요.</string>
+    <string name="setup_open_settings">접근성 설정 열기</string>
+    <string name="setup_restricted">스위치가 회색이면: 앱 정보 → ⋮ → 제한된 설정 허용</string>
+    <string name="home_apps_screen">앱스 화면</string>
+    <string name="home_not_read">아직 읽지 않음</string>
+    <plurals name="home_layout_folders">
+        <item quantity="other">폴더 %d개</item>
     </plurals>
-
-    <!-- 앱스 화면 -->
-    <string name="apps_search_hint">앱 검색</string>
-    <string name="apps_clear_search">검색어 지우기</string>
-    <string name="apps_settings">설정</string>
-    <string name="apps_view_folders">폴더</string>
-    <string name="apps_view_all">전체 A–Z</string>
-    <plurals name="apps_summary">
-        <item quantity="other">앱 %1$d개 · 자동 분류됨</item>
+    <plurals name="home_layout_loose">
+        <item quantity="other">폴더 밖 앱 %d개</item>
     </plurals>
-    <string name="apps_no_results">\'%1$s\'에 맞는 앱이 없어요.</string>
-    <string name="app_menu_label">더보기</string>
-    <string name="app_menu_move">다른 폴더로 옮기기</string>
-    <string name="app_menu_info">앱 정보</string>
-    <string name="app_menu_uninstall">삭제</string>
-    <string name="app_launch_failed">%1$s 앱을 열 수 없어요.</string>
-    <string name="install_notice">\'%1$s\' → %2$s 폴더에 추가됨</string>
-    <string name="install_notice_change">변경</string>
+    <string name="home_start">앱스 화면 읽고 정리하기</string>
+    <string name="home_start_hint">앱스 화면을 열어 폴더 안까지 확인해요. 직접 확인하기 전에는 아무것도 바꾸지 않아요.</string>
+    <string name="home_undo">마지막 정리 되돌리기</string>
+    <string name="home_undo_hint">정리하기 전 폴더 구성으로</string>
+    <string name="home_undo_confirm_title">되돌릴까요?</string>
+    <string name="home_undo_confirm_body">마지막으로 정리하기 전의 폴더 구성으로 되돌려요. 한동안 화면이 혼자 움직이니 만지지 말아 주세요.</string>
 
-    <string name="folder_rename">이름 바꾸기</string>
-    <string name="folder_rename_save">저장</string>
+    <string name="work_reading">앱스 화면 읽는 중…</string>
+    <string name="work_organizing">정리 중 %1$d/%2$d</string>
+    <string name="work_read_failed">앱스 화면을 읽지 못했어요. One UI 홈 화면에서만 쓸 수 있어요.</string>
+    <string name="work_done">정리 완료</string>
+    <string name="work_undone">되돌리기 완료</string>
+    <string name="work_stopped">%1$d/%2$d에서 멈춤</string>
+    <string name="work_failed">%2$d단계 중 %1$d단계에서 멈췄어요. 화면이 예상과 달랐어요. 여기까지 한 정리는 그대로 남아요.</string>
+
+    <!-- 미리보기 -->
+    <string name="preview_title">정리하기</string>
+    <string name="mode_keep">기존 폴더 유지</string>
+    <string name="mode_rebuild">Tidy에 맡기기</string>
+    <string name="mode_keep_hint">지금 폴더는 그대로 두고, 폴더 밖 앱만 맞는 폴더나 새 폴더에 넣어요.</string>
+    <string name="mode_rebuild_hint">지금 폴더는 무시해요. 모두 해체하고 처음부터 새로 정리해요.</string>
+    <string name="preview_nothing">바꿀 것 없음</string>
+    <string name="preview_summary">앱 이동 %1$d · 새 폴더 %2$d · 폴더 해체 %3$d</string>
+    <string name="preview_new_folder">새 폴더</string>
+    <string name="preview_rename">이름 바꾸기</string>
+    <string name="preview_loose">폴더 밖</string>
+    <plurals name="preview_apply">
+        <item quantity="other">적용 (%d단계)</item>
+    </plurals>
+    <string name="preview_confirm_title">지금 정리할까요?</string>
+    <string name="preview_confirm_body">Tidy가 앱스 화면에서 아이콘을 직접 옮겨요. 끝날 때까지 화면을 만지지 말아 주세요. 알림에서 멈출 수 있고, 끝난 뒤 되돌릴 수도 있어요.</string>
+    <string name="preview_confirm_go">시작</string>
+    <string name="move_title">\'%1$s\' 옮길 곳</string>
+    <string name="move_current">현재 위치</string>
     <string name="folder_name">폴더 이름</string>
+    <string name="folder_rename_save">저장</string>
 
-    <string name="move_title">\'%1$s\' 옮길 폴더</string>
-    <string name="move_auto">자동 분류: %1$s</string>
-    <string name="move_current">현재 폴더</string>
+    <!-- 정리 중 -->
+    <string name="channel_organizing">정리 진행</string>
+    <string name="organizing_title">Tidy 정리 중 %1$d/%2$d</string>
+    <string name="organizing_body">끝날 때까지 화면을 만지지 마세요</string>
+    <string name="organizing_stop">중지</string>
 
-    <!-- 처음 실행 -->
-    <string name="onboarding_loading">앱 정리 중…</string>
-    <plurals name="onboarding_title">
-        <item quantity="other">설치된 앱 %1$d개를 %2$d개 폴더로 정리했어요</item>
-    </plurals>
-    <string name="onboarding_body">앱 카테고리와 이름을 보고 분류했어요. 잘못 들어간 앱은 언제든 옮길 수 있어요.</string>
-    <string name="onboarding_new_apps">새 앱도 자동 분류</string>
-    <string name="onboarding_new_apps_hint">설치하자마자 맞는 폴더로</string>
-    <string name="onboarding_moves_stay">직접 옮긴 앱은 그대로</string>
-    <string name="onboarding_moves_stay_hint">다시 분류해도 바뀌지 않음</string>
-    <string name="onboarding_private">폰 안에서만 처리</string>
-    <string name="onboarding_private_hint">앱 목록은 어디에도 전송되지 않음</string>
-    <string name="onboarding_use_apps_screen">앱스 화면으로 쓰기</string>
-    <string name="onboarding_set_home">기본 홈 앱으로 설정</string>
-    <string name="onboarding_later">나중에</string>
-    <string name="onboarding_keep_home">홈 화면은 그대로 두기</string>
+    <!-- 새 앱 -->
+    <string name="new_app_section">새 앱</string>
+    <string name="new_app_mode_ask">폴더에 넣기 전에 묻기</string>
+    <string name="new_app_mode_auto">바로 폴더에 넣기</string>
+    <string name="new_app_mode_off">끄기</string>
+    <string name="new_app_hint">마지막으로 읽은 앱스 화면의 폴더 기준</string>
+    <string name="channel_new_apps">새 앱</string>
+    <string name="new_app_title">\'%1$s\' 폴더에 넣을까요?</string>
+    <string name="new_app_body">→ %1$s</string>
+    <string name="new_app_add">넣기</string>
+    <string name="new_app_done">\'%1$s\' → %2$s</string>
+    <string name="new_app_failed">\'%1$s\'을(를) 옮기지 못했어요. 직접 옮기거나 Tidy에서 다시 정리해 주세요.</string>
+
+    <!-- 접근성 서비스 -->
+    <string name="service_label">Tidy</string>
+    <string name="service_summary">One UI 앱스 화면을 폴더로 정리</string>
+    <string name="service_description">정리를 요청하거나 새 앱을 폴더에 넣을 때만, Tidy가 One UI 앱스 화면을 열어 폴더를 읽고 아이콘을 옮겨요. One UI 홈 화면에서만 동작하고, 다른 앱의 화면은 읽지 않아요.</string>
 
     <!-- 설정 -->
     <string name="settings_title">설정</string>
-    <string name="settings_home_section">홈 화면</string>
-    <string name="settings_default_home">기본 홈 앱</string>
-    <string name="settings_default_home_on">Tidy 사용 중 · 눌러서 변경</string>
-    <string name="settings_default_home_off">다른 앱 사용 중 · 눌러서 Tidy로 변경</string>
-    <string name="settings_takeover">위로 밀면 Tidy 열기</string>
-    <string name="settings_takeover_on">켜짐 · One UI 앱스 화면 대신 Tidy</string>
-    <string name="settings_takeover_off">꺼짐 · 눌러서 설정</string>
-    <string name="settings_sorting_section">분류</string>
-    <string name="settings_reset">직접 바꾼 분류 되돌리기</string>
-    <string name="settings_reset_hint">옮긴 앱과 바꾼 폴더 이름 %1$d개</string>
-    <string name="settings_reset_none">직접 바꾼 분류 없음</string>
-    <string name="settings_reset_confirm_title">되돌릴까요?</string>
-    <string name="settings_reset_confirm_body">옮긴 앱은 자동 분류된 폴더로, 폴더 이름은 원래 이름으로 돌아가요.</string>
-    <string name="settings_reset_confirm">되돌리기</string>
+    <string name="settings_permission_section">권한</string>
+    <string name="settings_service">접근성 권한</string>
+    <string name="settings_service_on">켜짐</string>
+    <string name="settings_service_off">꺼짐 · 눌러서 켜기</string>
     <string name="settings_version">버전</string>
-
-    <!-- 앱스 화면 대체 (launcher/AppsScreenService) -->
-    <string name="takeover_title">앱스 화면을 Tidy로</string>
-    <string name="takeover_body">홈 화면은 One UI 그대로 두고, 위로 밀면 Samsung 앱스 화면 대신 Tidy가 열려요.\n\n앱스 화면이 열리는 순간을 알아채려고 접근성 권한을 써요. One UI 홈 화면만 보고, 다른 앱의 화면은 읽지 않아요.\n\n다음 화면에서 설치된 앱 → \'Tidy 앱스 화면\'을 켜 주세요. 스위치가 회색으로 막혀 있으면 앱 정보 → ⋮ → \'제한된 설정 허용\'을 먼저 눌러 주세요.</string>
-    <string name="takeover_open_settings">설정 열기</string>
-    <string name="takeover_open_app_info">앱 정보</string>
-    <string name="takeover_service_label">Tidy 앱스 화면</string>
-    <string name="takeover_service_summary">홈 화면에서 위로 밀면 Tidy 열기</string>
-    <string name="takeover_service_description">One UI 홈 화면에서 위로 밀면 Samsung 앱스 화면 대신 Tidy가 열려요. Tidy는 One UI 홈 화면이 앱스 화면을 띄웠는지만 확인하고, 다른 앱의 화면은 읽지 않아요.</string>
 
     <!-- 업데이트 (WakeLink의 update/ 코드와 공유) -->
     <string name="settings_updates">앱 업데이트</string>

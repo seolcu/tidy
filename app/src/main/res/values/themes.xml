@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Transparent window over the wallpaper, like any home screen. The
-         apps screen paints its own mostly opaque wash (AppsScreen); settings
-         and onboarding are fully opaque. -->
+    <!-- Window background matches the Compose theme's background token
+         (ui/theme/Color.kt), so there's no flash of another color at start. -->
     <style name="Theme.Tidy" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="android:windowShowWallpaper">true</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowBackground">@color/window_background</item>
     </style>
 </resources>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Window background matches the Compose theme's background token
+         (ui/theme/Color.kt), so there's no flash of another color at start. -->
     <style name="Theme.Tidy" parent="android:Theme.Material.NoActionBar">
-        <item name="android:windowShowWallpaper">true</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowBackground">@color/window_background</item>
     </style>
 </resources>
