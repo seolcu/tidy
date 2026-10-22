@@ -96,6 +96,32 @@ wallpaper (`windowShowWallpaper`); `AppsScreen` paints a 90% wash.
 v1 deliberately has no widgets, dock or home-screen icon grid: "home" is
 the sorted apps screen itself.
 
+### Keeping One UI Home, replacing only its apps screen
+
+On Galaxy phones the main mode is different: One UI Home stays the home
+app and Tidy replaces only its apps screen (swipe up). There's no API for
+that, so `launcher/AppsScreenService` is an opt-in accessibility service
+scoped to `com.sec.android.app.launcher` (res/xml/apps_screen_service.xml)
+that watches for the launcher's `id/apps_screen` view (present only while
+its apps screen is up) and starts MainActivity with
+`EXTRA_FROM_APPS_SWIPE` and a no-fade slide (`res/anim/apps_screen_enter`);
+Samsung's apps screen shows for ~0.1 s before Tidy covers it. Things
+learned on a real S24 (One UI 8), each of which broke the flow once:
+
+- Never close Samsung's apps screen with a global BACK after starting
+  Tidy: the BACK lands on Tidy and closes it instead. It stays open behind
+  Tidy.
+- Leaving must use the service's `GLOBAL_ACTION_HOME` (`goHome()`): only
+  the real home action closes One UI's apps screen; a HOME *intent* from an
+  app brings One UI forward with its apps screen still up.
+- The service never sees that apps screen close (Tidy is on top), so it
+  forgets it on takeover, and ignores the launcher for 1 s after Tidy pauses
+  (`onTidyLeft`) so the closing apps screen doesn't reopen Tidy.
+- The per-service accessibility settings page needs a system permission
+  (SecurityException); open the general accessibility list.
+- Sideloaded (browser/file-manager installed) APKs need App info → ⋮ →
+  "Allow restricted settings" once before the service can be enabled.
+
 ### App list
 
 `data/AppRepository` (one per process, owned by `TidyApplication`) lists

@@ -50,7 +50,6 @@
     <string name="folder_rename">Rename</string>
     <string name="folder_rename_save">Save</string>
     <string name="folder_name">Folder name</string>
-    <string name="folder_hint">Long-press an app to move it · moved apps stay put</string>
 
     <string name="move_title">Move %1$s to</string>
     <string name="move_auto">Auto-sorted into: %1$s</string>
@@ -69,7 +68,9 @@
     <string name="onboarding_moves_stay_hint">Apps you move are never re-sorted</string>
     <string name="onboarding_private">On this phone only</string>
     <string name="onboarding_private_hint">Your app list is never sent anywhere</string>
+    <string name="onboarding_use_apps_screen">Use as my apps screen</string>
     <string name="onboarding_set_home">Set as home app</string>
+    <string name="onboarding_later">Not now</string>
     <string name="onboarding_keep_home">Keep my home screen</string>
 
     <!-- Settings -->
@@ -78,6 +79,9 @@
     <string name="settings_default_home">Default home app</string>
     <string name="settings_default_home_on">Tidy · tap to change</string>
     <string name="settings_default_home_off">Another app · tap to use Tidy</string>
+    <string name="settings_takeover">Open Tidy on swipe up</string>
+    <string name="settings_takeover_on">On · replaces the One UI apps screen</string>
+    <string name="settings_takeover_off">Off · tap to set up</string>
     <string name="settings_sorting_section">Sorting</string>
     <string name="settings_reset">Undo my changes</string>
     <string name="settings_reset_hint">Moved apps and renamed folders: %1$d</string>
@@ -86,6 +90,15 @@
     <string name="settings_reset_confirm_body">Moved apps go back to their automatic folders, and folders get their original names.</string>
     <string name="settings_reset_confirm">Undo</string>
     <string name="settings_version">Version</string>
+
+    <!-- Apps screen takeover (launcher/AppsScreenService) -->
+    <string name="takeover_title">Use Tidy as the apps screen</string>
+    <string name="takeover_body">Keep the One UI home screen; swiping up opens Tidy instead of the Samsung apps screen.\n\nTidy needs an accessibility permission to notice the apps screen opening. It only looks at the One UI home screen, never at other apps.\n\nOn the next screen, open Installed apps and turn on Tidy apps screen. If the switch is greyed out, first open App info → ⋮ → Allow restricted settings.</string>
+    <string name="takeover_open_settings">Open settings</string>
+    <string name="takeover_open_app_info">App info</string>
+    <string name="takeover_service_label">Tidy apps screen</string>
+    <string name="takeover_service_summary">Swipe up on the home screen to open Tidy</string>
+    <string name="takeover_service_description">When you swipe up on the One UI home screen, Tidy opens instead of the Samsung apps screen. Tidy only checks whether the One UI home screen is showing its apps screen; it doesn\'t read other apps.</string>
 
     <!-- Updates (shared with WakeLink's update/ code) -->
     <string name="settings_updates">App updates</string>

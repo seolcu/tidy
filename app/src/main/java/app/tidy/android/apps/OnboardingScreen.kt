@@ -18,6 +18,7 @@ import androidx.compose.material.icons.rounded.PushPin
 import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -32,7 +33,13 @@ import app.tidy.android.ui.components.TidyMark
 
 /** First launch: what Tidy just did, and whether to make it the home app. */
 @Composable
-fun OnboardingScreen(state: AppsState?, onSetHome: () -> Unit, onKeepHome: () -> Unit) {
+fun OnboardingScreen(
+    state: AppsState?,
+    takeoverAvailable: Boolean,
+    onUseAppsScreen: () -> Unit,
+    onSetHome: () -> Unit,
+    onKeepHome: () -> Unit,
+) {
     Column(
         Modifier
             .fillMaxSize()
@@ -78,17 +85,29 @@ fun OnboardingScreen(state: AppsState?, onSetHome: () -> Unit, onKeepHome: () ->
             }
         }
         Column(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 16.dp)) {
+            // On One UI the natural fit is keeping its home screen and replacing
+            // only the apps screen; elsewhere, being the home app.
             Button(
-                onClick = onSetHome,
+                onClick = if (takeoverAvailable) onUseAppsScreen else onSetHome,
                 enabled = state != null,
                 shape = RoundedCornerShape(18.dp),
                 modifier = Modifier.fillMaxWidth().height(56.dp),
-            ) { Text(stringResource(R.string.onboarding_set_home)) }
+            ) {
+                Text(stringResource(if (takeoverAvailable) R.string.onboarding_use_apps_screen else R.string.onboarding_set_home))
+            }
+            if (takeoverAvailable) {
+                OutlinedButton(
+                    onClick = onSetHome,
+                    enabled = state != null,
+                    shape = RoundedCornerShape(18.dp),
+                    modifier = Modifier.fillMaxWidth().height(52.dp),
+                ) { Text(stringResource(R.string.onboarding_set_home)) }
+            }
             TextButton(
                 onClick = onKeepHome,
                 enabled = state != null,
                 modifier = Modifier.fillMaxWidth().height(48.dp),
-            ) { Text(stringResource(R.string.onboarding_keep_home)) }
+            ) { Text(stringResource(if (takeoverAvailable) R.string.onboarding_later else R.string.onboarding_keep_home)) }
         }
     }
 }

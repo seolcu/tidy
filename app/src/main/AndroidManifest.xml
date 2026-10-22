@@ -12,6 +12,8 @@
     <!-- Package visibility: every app with a launcher icon. LauncherApps lists
          these for a launcher, and this keeps their ApplicationInfo readable. -->
     <queries>
+        <!-- One UI Home: is the "apps screen" takeover (AppsScreenService) offered at all. -->
+        <package android:name="com.sec.android.app.launcher" />
         <intent>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
@@ -47,6 +49,22 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
+        <!-- Optional: keeps One UI Home but opens Tidy instead of its apps
+             screen (launcher/AppsScreenService.kt). Only the user can turn it on,
+             in Accessibility settings. -->
+        <service
+            android:name=".launcher.AppsScreenService"
+            android:exported="false"
+            android:label="@string/takeover_service_label"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/apps_screen_service" />
+        </service>
 
         <provider
             android:name="androidx.core.content.FileProvider"

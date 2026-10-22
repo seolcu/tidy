@@ -48,7 +48,6 @@
     <string name="folder_rename">이름 바꾸기</string>
     <string name="folder_rename_save">저장</string>
     <string name="folder_name">폴더 이름</string>
-    <string name="folder_hint">길게 눌러서 다른 폴더로 옮기기 · 옮긴 앱은 다시 분류해도 유지</string>
 
     <string name="move_title">\'%1$s\' 옮길 폴더</string>
     <string name="move_auto">자동 분류: %1$s</string>
@@ -66,7 +65,9 @@
     <string name="onboarding_moves_stay_hint">다시 분류해도 바뀌지 않음</string>
     <string name="onboarding_private">폰 안에서만 처리</string>
     <string name="onboarding_private_hint">앱 목록은 어디에도 전송되지 않음</string>
+    <string name="onboarding_use_apps_screen">앱스 화면으로 쓰기</string>
     <string name="onboarding_set_home">기본 홈 앱으로 설정</string>
+    <string name="onboarding_later">나중에</string>
     <string name="onboarding_keep_home">홈 화면은 그대로 두기</string>
 
     <!-- 설정 -->
@@ -75,6 +76,9 @@
     <string name="settings_default_home">기본 홈 앱</string>
     <string name="settings_default_home_on">Tidy 사용 중 · 눌러서 변경</string>
     <string name="settings_default_home_off">다른 앱 사용 중 · 눌러서 Tidy로 변경</string>
+    <string name="settings_takeover">위로 밀면 Tidy 열기</string>
+    <string name="settings_takeover_on">켜짐 · One UI 앱스 화면 대신 Tidy</string>
+    <string name="settings_takeover_off">꺼짐 · 눌러서 설정</string>
     <string name="settings_sorting_section">분류</string>
     <string name="settings_reset">직접 바꾼 분류 되돌리기</string>
     <string name="settings_reset_hint">옮긴 앱과 바꾼 폴더 이름 %1$d개</string>
@@ -83,6 +87,15 @@
     <string name="settings_reset_confirm_body">옮긴 앱은 자동 분류된 폴더로, 폴더 이름은 원래 이름으로 돌아가요.</string>
     <string name="settings_reset_confirm">되돌리기</string>
     <string name="settings_version">버전</string>
+
+    <!-- 앱스 화면 대체 (launcher/AppsScreenService) -->
+    <string name="takeover_title">앱스 화면을 Tidy로</string>
+    <string name="takeover_body">홈 화면은 One UI 그대로 두고, 위로 밀면 Samsung 앱스 화면 대신 Tidy가 열려요.\n\n앱스 화면이 열리는 순간을 알아채려고 접근성 권한을 써요. One UI 홈 화면만 보고, 다른 앱의 화면은 읽지 않아요.\n\n다음 화면에서 설치된 앱 → \'Tidy 앱스 화면\'을 켜 주세요. 스위치가 회색으로 막혀 있으면 앱 정보 → ⋮ → \'제한된 설정 허용\'을 먼저 눌러 주세요.</string>
+    <string name="takeover_open_settings">설정 열기</string>
+    <string name="takeover_open_app_info">앱 정보</string>
+    <string name="takeover_service_label">Tidy 앱스 화면</string>
+    <string name="takeover_service_summary">홈 화면에서 위로 밀면 Tidy 열기</string>
+    <string name="takeover_service_description">One UI 홈 화면에서 위로 밀면 Samsung 앱스 화면 대신 Tidy가 열려요. Tidy는 One UI 홈 화면이 앱스 화면을 띄웠는지만 확인하고, 다른 앱의 화면은 읽지 않아요.</string>
 
     <!-- 업데이트 (WakeLink의 update/ 코드와 공유) -->
     <string name="settings_updates">앱 업데이트</string>

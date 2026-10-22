@@ -27,8 +27,10 @@ import app.tidy.android.apps.AppsScreen
 import app.tidy.android.apps.AppsViewModel
 import app.tidy.android.apps.OnboardingScreen
 import app.tidy.android.data.SettingsRepository
+import app.tidy.android.launcher.AppsScreenService
 import app.tidy.android.launcher.HomeRole
 import app.tidy.android.settings.SettingsScreen
+import app.tidy.android.settings.TakeoverDialog
 import app.tidy.android.ui.theme.TidyTheme
 import app.tidy.android.update.AppUpdater
 import app.tidy.android.update.UpdateDialog
@@ -49,9 +51,14 @@ class MainActivity : ComponentActivity() {
     private var updateRequested by mutableStateOf(false)
     private var showSettings by mutableStateOf(false)
     private var isDefaultHome by mutableStateOf(false)
+    private var takeoverEnabled by mutableStateOf(false)
+    private var showTakeoverDialog by mutableStateOf(false)
+    /** Opened by AppsScreenService in place of One UI's apps screen: leave like one. */
+    private var fromAppsSwipe = false
 
     private val homeRoleRequest = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         isDefaultHome = HomeRole.isHeld(this)
+        takeoverEnabled = AppsScreenService.isEnabled(this)
     }
     private val notificationPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) {}
 
@@ -62,10 +69,16 @@ class MainActivity : ComponentActivity() {
             updateRequested = intent?.getBooleanExtra(EXTRA_SHOW_UPDATE, false) == true
         }
         isDefaultHome = HomeRole.isHeld(this)
+        fromAppsSwipe = intent?.getBooleanExtra(EXTRA_FROM_APPS_SWIPE, false) == true
+        val takeoverAvailable = AppsScreenService.isAvailable(this)
 
         // Lowest priority: screens' own BackHandlers (search, settings) run first.
         onBackPressedDispatcher.addCallback(this) {
-            if (!isDefaultHome) finish()
+            when {
+                isDefaultHome -> {}
+                fromAppsSwipe -> backToOneUiHome()
+                else -> finish()
+            }
         }
 
         setContent {
@@ -85,6 +98,11 @@ class MainActivity : ComponentActivity() {
                     onboarded == null -> {}
                     onboarded == false -> OnboardingScreen(
                         state = state,
+                        takeoverAvailable = takeoverAvailable,
+                        onUseAppsScreen = {
+                            finishOnboarding()
+                            showTakeoverDialog = true
+                        },
                         onSetHome = {
                             finishOnboarding()
                             requestHomeRole()
@@ -94,14 +112,23 @@ class MainActivity : ComponentActivity() {
                     showSettings -> SettingsScreen(
                         state = state,
                         isDefaultHome = isDefaultHome,
+                        takeoverAvailable = takeoverAvailable,
+                        takeoverEnabled = takeoverEnabled,
                         onRequestHome = ::requestHomeRole,
+                        onSetUpTakeover = { showTakeoverDialog = true },
                         onResetCustomizations = vm::resetCustomizations,
                         onBack = { showSettings = false },
                     )
                     else -> AppsScreen(vm, onOpenSettings = { showSettings = true })
                 }
+                if (showTakeoverDialog) TakeoverDialog(onDismiss = { showTakeoverDialog = false })
             }
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        AppsScreenService.onTidyLeft()
     }
 
     override fun onResume() {
@@ -114,10 +141,20 @@ class MainActivity : ComponentActivity() {
         if (intent.getBooleanExtra(EXTRA_SHOW_UPDATE, false)) {
             updateRequested = true
         } else {
-            // Home button (or the launcher icon) while already open.
+            // Home button, the launcher icon, or another swipe up while already open.
+            fromAppsSwipe = intent.getBooleanExtra(EXTRA_FROM_APPS_SWIPE, false)
             showSettings = false
             vm.resetUi()
         }
+    }
+
+    /**
+     * Leaving Tidy opened in place of One UI's apps screen: back acts as the
+     * home button, which also closes One UI's apps screen still open behind
+     * Tidy (see AppsScreenService.goHome).
+     */
+    private fun backToOneUiHome() {
+        if (!AppsScreenService.goHome()) finish()
     }
 
     private fun finishOnboarding() {
@@ -169,6 +206,7 @@ class MainActivity : ComponentActivity() {
 
     companion object {
         const val EXTRA_SHOW_UPDATE = "show_update"
+        const val EXTRA_FROM_APPS_SWIPE = "from_apps_swipe"
     }
 }
 

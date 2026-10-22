@@ -96,12 +96,6 @@ fun FolderDialog(
                         AppTile(item, onMove = { onMove(item) })
                     }
                 }
-                Text(
-                    stringResource(R.string.folder_hint),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(horizontal = 8.dp),
-                )
             }
         }
     }

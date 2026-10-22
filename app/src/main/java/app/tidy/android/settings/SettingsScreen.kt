@@ -15,6 +15,7 @@ import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Restore
+import androidx.compose.material.icons.rounded.SwipeUp
 import androidx.compose.material.icons.rounded.SystemUpdate
 import androidx.compose.material.icons.rounded.Update
 import androidx.compose.material3.AlertDialog
@@ -53,7 +54,10 @@ import kotlinx.coroutines.launch
 fun SettingsScreen(
     state: AppsState?,
     isDefaultHome: Boolean,
+    takeoverAvailable: Boolean,
+    takeoverEnabled: Boolean,
     onRequestHome: () -> Unit,
+    onSetUpTakeover: () -> Unit,
     onResetCustomizations: () -> Unit,
     onBack: () -> Unit,
 ) {
@@ -98,6 +102,16 @@ fun SettingsScreen(
                     ),
                     onClick = onRequestHome,
                 )
+                if (takeoverAvailable) {
+                    SettingsRow(
+                        icon = Icons.Rounded.SwipeUp,
+                        title = stringResource(R.string.settings_takeover),
+                        supporting = stringResource(
+                            if (takeoverEnabled) R.string.settings_takeover_on else R.string.settings_takeover_off
+                        ),
+                        onClick = onSetUpTakeover,
+                    )
+                }
             }
 
             SectionCard(stringResource(R.string.settings_sorting_section)) {

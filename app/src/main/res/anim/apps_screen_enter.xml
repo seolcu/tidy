@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Tidy rising like an apps screen when opened by a swipe up on One UI Home.
+     Opaque from the first frame (no fade) so Samsung's own apps screen, which
+     is opening underneath, shows as briefly as possible. -->
+<translate xmlns:android="http://schemas.android.com/apk/res/android"
+    android:duration="160"
+    android:interpolator="@android:anim/decelerate_interpolator"
+    android:fromYDelta="6%"
+    android:toYDelta="0" />
