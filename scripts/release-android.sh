@@ -73,7 +73,8 @@ if [[ "${SKIP_DEVICE_CHECK:-}" != 1 ]]; then
     pkg=app.tidy.android
     "$adb_bin" install -r "$out/tidy.apk" >/dev/null
     "$adb_bin" logcat -b crash -c
-    "$adb_bin" shell am force-stop "$pkg"
+    # No `am force-stop`: it turns Tidy's accessibility service off (the user
+    # would have to enable it again). The install already restarted the app.
     "$adb_bin" shell am start -W -n "$pkg/.MainActivity" >/dev/null
     sleep 8
     if "$adb_bin" logcat -d -b crash | grep -q "$pkg" || [[ -z $("$adb_bin" shell pidof "$pkg" | tr -d '\r') ]]; then

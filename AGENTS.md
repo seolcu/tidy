@@ -58,6 +58,9 @@ Testing on the phone, learned the hard way:
   stuck in "Binding services" (`dumpsys accessibility`). Writing the same
   `enabled_accessibility_services` value back (blank, then the old value)
   rebinds it.
+- `am force-stop app.tidy.android` turns the accessibility service off
+  (it has to be enabled again by hand), so the release script doesn't use
+  it.
 - `testapp/` is a code-free app labelled "테스트 페이" (a finance name) for
   trying the new-app helper: `./gradlew :testapp:assembleDebug`, then
   `adb install`/`adb uninstall app.tidy.testpay`.
